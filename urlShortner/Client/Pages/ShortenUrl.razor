@@ -1,0 +1,42 @@
+﻿@page "/shortenurl"
+@using urlShortner.Shared
+@inject HttpClient Http
+
+<h3>ShortenUrl</h3>
+<p>
+    <label>
+        Url
+        <input @bind="_longUrl" />
+    </label>
+    <button @onclick="GetShortUrl">
+        Get short url
+    </button>
+
+    @_message
+</p>
+
+@code {
+
+    private string _longUrl { get; set; }
+
+    private LongUrlShortUrl _longUrlShortUrl = new LongUrlShortUrl();
+
+    private string _message = "";
+
+    private async Task GetShortUrl()
+    {
+        var response = await Http.PostAsJsonAsync("UrlShortner", _longUrl);
+
+        if (response.IsSuccessStatusCode)
+        {
+            _longUrlShortUrl = await response.Content.ReadFromJsonAsync<LongUrlShortUrl>();
+
+            _message = $" The short url is {_longUrlShortUrl.ShortUrl}";
+        }
+        else
+        {
+            var errorResponse = await response.Content.ReadFromJsonAsync<UrlShortnerErrorResponse>();
+            _message = $" {errorResponse.Message}";
+        }
+    }
+}

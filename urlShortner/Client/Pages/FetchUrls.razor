@@ -1,0 +1,42 @@
+﻿@page "/fetchurls"
+@using urlShortner.Shared
+@inject HttpClient Http
+
+<h1>Long url and short url</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (urls == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Long url</th>
+                <th>Short url</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var url in urls)
+            {
+                <tr>
+                    <td>@url.LongUrl</td>
+                    <td>@url.ShortUrl</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private LongUrlShortUrl[] urls;
+
+    protected override async Task OnInitializedAsync()
+    {
+        urls = await Http.GetFromJsonAsync<LongUrlShortUrl[]>("UrlShortner");
+    }
+
+}
